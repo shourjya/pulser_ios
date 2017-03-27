@@ -14,6 +14,9 @@
 #include <dlib/image_transforms.h>
 #include <math.h>
 
+#define framerate 30 // do not change
+#define noofframes 180
+#define windowshift 60 // must be factor of noofframes and multiple of framerate
 
 struct point{
     double x;
@@ -33,6 +36,8 @@ struct roots{
 int smallestint (int*,int);
 long double smallestdouble (long double*,int);
 roots rootsabc(long double , long double , long double );
+static void RVNColorRGBtoHSL(CGFloat red, CGFloat green, CGFloat blue, CGFloat *hue, CGFloat *saturation, CGFloat *lightness);
+
 
 @end
 @implementation DlibWrapper {
@@ -68,6 +73,21 @@ roots rootsabc(long double , long double , long double );
     
     dlib::array2d<dlib::bgr_pixel> img;
     
+    //inter frame variables
+    
+    int noofstates = noofframes / windowshift;
+    int statevar = 0;
+    
+    // travelling window variables
+    
+    double avggreenarray[180],avghuearray[180],finalhuearray[180];
+    int count=0;
+    int startflag = 0;
+    
+    int HR = 60, HRV = 42.2; // initialisation only
+    
+    // face detection variables
+    
     int partno, x_canthus_eyeleft,y_canthus_eyeleft,x_canthus_eyeright,y_canthus_eyeright;
     int fh1,fh2,fh3,fh4;
     int x_noselist[4],y_noselist[4],flag_noselist_same;
@@ -90,9 +110,8 @@ roots rootsabc(long double , long double , long double );
     double xmean,ymean;
     
     int pixelcount = 0,pixelhuesum,pixelredsum,pixelgreensum,pixelhue,pixelred;
-    int rval,gval,bval,hval,sval,vval;
     
-    double avggreenarray[300],avggreen;
+    double avggreen,avghue;
     
     // MARK: magic
     CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
@@ -132,7 +151,8 @@ roots rootsabc(long double , long double , long double );
     std::vector<dlib::rectangle> convertedRectangles = [DlibWrapper convertCGRectValueArray:rects];
     
     // for every detected face
-    for (unsigned long j = 0; j < convertedRectangles.size(); ++j)
+    //for (unsigned long j = 0; j < convertedRectangles.size(); ++j)
+    for (unsigned long j = 0; j < 1; ++j) // primary face only
     {
         dlib::rectangle oneFaceRect = convertedRectangles[j];
         
@@ -145,10 +165,10 @@ roots rootsabc(long double , long double , long double );
             // draw_solid_circle(img, p, 3, dlib::rgb_pixel(0, 255, 255));
         }
 
-        draw_solid_circle(img, shape.part(27), 3, dlib::rgb_pixel(0, 255, 255));
-        draw_solid_circle(img, shape.part(28), 3, dlib::rgb_pixel(0, 255, 255));
-        draw_solid_circle(img, shape.part(29), 3, dlib::rgb_pixel(0, 255, 255));
-        draw_solid_circle(img, shape.part(30), 3, dlib::rgb_pixel(0, 255, 255));
+        //draw_solid_circle(img, shape.part(27), 3, dlib::rgb_pixel(0, 255, 255));
+        //draw_solid_circle(img, shape.part(28), 3, dlib::rgb_pixel(0, 255, 255));
+        //draw_solid_circle(img, shape.part(29), 3, dlib::rgb_pixel(0, 255, 255));
+        //draw_solid_circle(img, shape.part(30), 3, dlib::rgb_pixel(0, 255, 255));
 
         // detect forehead
         
@@ -227,7 +247,7 @@ roots rootsabc(long double , long double , long double );
         
         if (flag_noselist_same == 1)
         {
-            int xinter = x_noselist[0];
+            xinter = x_noselist[0];
         }
         else
         {
@@ -384,26 +404,74 @@ roots rootsabc(long double , long double , long double );
         dlib::point fh_tr;
         fh_tr(0) = xfh_top_right;
         fh_tr(1) = yfh_top_right;
-        draw_solid_circle(img, fh_tr, 3, dlib::rgb_pixel(0, 0, 255));
+        //draw_solid_circle(img, fh_tr, 3, dlib::rgb_pixel(0, 0, 255));
 
         dlib::point fh_br;
         fh_br(0) = xfh_bottom_right;
         fh_br(1) = yfh_bottom_right;
-        draw_solid_circle(img, fh_br, 3, dlib::rgb_pixel(0, 0, 255));
+        //draw_solid_circle(img, fh_br, 3, dlib::rgb_pixel(0, 0, 255));
 
         dlib::point fh_tl;
         fh_tl(0) = xfh_top_left;
         fh_tl(1) = yfh_top_left;
-        draw_solid_circle(img, fh_tl, 3, dlib::rgb_pixel(0, 0, 255));
+        //draw_solid_circle(img, fh_tl, 3, dlib::rgb_pixel(0, 0, 255));
         
         dlib::point fh_bl;
         fh_bl(0) = xfh_bottom_left;
         fh_bl(1) = yfh_bottom_left;
-        draw_solid_circle(img, fh_bl, 3, dlib::rgb_pixel(0, 0, 255));
-
-
+        //draw_solid_circle(img, fh_bl, 3, dlib::rgb_pixel(0, 0, 255));
         
         // detect hsv
+    
+        for (int k=xfh_top_left;k<=xfh_bottom_right;k++)
+        {
+            for (int l=yfh_top_left;l<=yfh_bottom_right;l++)
+            {
+                double fR = double(img[k][l].red);
+                double fG = double(img[k][l].green);
+                double fB = double(img[k][l].blue);
+ 
+                CGFloat h, s, v;
+                RVNColorRGBtoHSL(fR, fG, fB, &h, &s, &v);
+                
+//                double fH,fS,fV;
+                // cout << "r,g,b = " << fR << "," << fG << "," << fB << endl;
+//                RGBtoHSV(fR, fG, fB, fH, fS, fV);
+                // cout << "hue = " << pixelhue << '\t';
+                
+                // pixelredsum+=fR;
+                pixelhuesum+=h;
+                
+                //pixelhuesum+=pixelhue;
+                pixelcount++;
+            }
+        }
+        avghue = double(pixelhuesum)/double(pixelcount);
+        dlib::rectangle fh(xfh_top_left,yfh_top_left,(xfh_bottom_right),(yfh_bottom_right));
+        draw_rectangle (img, fh, dlib::rgb_pixel(255,0,0), 5);
+        //win.add_overlay(dlib::image_window::overlay_rect(dets, rgb_pixel(255,0,0),"test" ));
+
+        if(count == noofframes)
+        {
+            count = 0;
+            statevar = (statevar + 1) % noofstates;
+            startflag = 1;
+        }
+
+        avghuearray[count]=avghue;
+
+        // travelling window implementation
+        
+        if (((count) % windowshift == 0) && startflag)
+        {
+            for(int c=0;c<noofframes;c++)
+            {
+                finalhuearray[c] = avghuearray[(c + (windowshift * statevar)) % noofstates]; // correct hue array
+            }
+            statevar = (statevar + 1) % noofstates; // update state
+        }
+        
+        
     }
     
     // lets put everything back where it belongs
@@ -508,6 +576,57 @@ roots rootsabc(long double a, long double b, long double c)
     return rootval;
 }
 
+static void RVNColorRGBtoHSL(CGFloat red, CGFloat green, CGFloat blue, CGFloat *hue, CGFloat *saturation, CGFloat *lightness)
+{
+    CGFloat r = red / 255.0f;
+    CGFloat g = green / 255.0f;
+    CGFloat b = blue / 255.0f;
+    
+    CGFloat max = MAX(r, g);
+    max = MAX(max, b);
+    CGFloat min = MIN(r, g);
+    min = MIN(min, b);
+    
+    CGFloat h;
+    CGFloat s;
+    CGFloat l = (max + min) / 2.0f;
+    
+    if (max == min) {
+        h = 0.0f;
+        s = 0.0f;
+    }
+    
+    else {
+        CGFloat d = max - min;
+        s = l > 0.5f ? d / (2.0f - max - min) : d / (max + min);
+        
+        if (max == r) {
+            h = (g - b) / d + (g < b ? 6.0f : 0.0f);
+        }
+        
+        else if (max == g) {
+            h = (b - r) / d + 2.0f;
+        }
+        
+        else if (max == b) {
+            h = (r - g) / d + 4.0f;
+        }
+        
+        h /= 6.0f;
+    }
+    
+    if (hue) {
+        *hue = roundf(h * 255.0f);
+    }
+    
+    if (saturation) {
+        *saturation = roundf(s * 255.0f);
+    }
+    
+    if (lightness) {
+        *lightness = roundf(l * 255.0f);
+    }
+}
 
 
 
