@@ -57,8 +57,9 @@ class SessionHandler : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, A
         // before it is added, availableMetadataObjectTypes is empty
         metaOutput.metadataObjectTypes = [AVMetadataObjectTypeFace]
         
+        //@property (nonatomic, weak) IBOutlet UILabel *HRVlabel;
         wrapper?.prepare()
-        
+        //wrapper?.initlabel()
         session.startRunning()
     }
     

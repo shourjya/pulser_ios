@@ -472,6 +472,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 529WM446GT;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					DLIB_JPEG_SUPPORT,
 					DLIB_NO_GUI_SUPPORT,
@@ -489,6 +490,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.thinkbiosolution.pulser;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "DisplayLiveSamples/DisplayLiveSamples-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
