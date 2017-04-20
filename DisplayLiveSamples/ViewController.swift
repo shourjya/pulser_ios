@@ -1,10 +1,3 @@
-//
-//  ViewController.swift
-//  DisplayLiveSamples
-//
-//  Created by Luis Reisewitz on 15.05.16.
-//  Copyright © 2016 ZweiGraf. All rights reserved.
-//
 
 import UIKit
 import AVFoundation

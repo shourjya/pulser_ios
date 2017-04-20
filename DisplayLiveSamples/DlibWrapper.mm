@@ -1,8 +1,3 @@
-//
-//  DlibWrapper.m
-//  DisplayLiveSamples
-//
-
 #import "DlibWrapper.h"
 #import <UIKit/UIKit.h>
 
@@ -14,7 +9,7 @@
 #define framerate 30 // do not change
 #define noofframes 180
 #define windowshift 60 // must be factor of noofframes and multiple of framerate
-
+#define noofresults 20 // do not change
 
 struct point{
     double x;
@@ -24,6 +19,11 @@ struct point{
 struct roots{
     long double root1;
     long double root2;
+};
+
+struct results{
+    double HR = 20;
+    double HRV = 0;
 };
 
 // global variables
@@ -46,11 +46,17 @@ CGFloat h, s, v;
 dlib::array2d<dlib::bgr_pixel> img;
 
 double avggreenarray[noofframes],avgredarray[noofframes],avghuearray[noofframes],finalhuearray[noofframes];
-double HR = 60, HRV = 42.2; // initialisation only
+//double HR = 60, HRV = 42.2; // initialisation only
+results resmain;
+
 int pixelcount = 0,pixelhuesum=0,pixelredsum=0,pixelgreensum=0;
 dlib::bgr_pixel pixdat;
 
+// plot data
 
+double hrv2d[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+double hr2d[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+int count2d = 0;
 // text overlay
 
 @interface DlibWrapper ()
@@ -67,7 +73,7 @@ long double smallestdouble (long double*,int);
 roots rootsabc(long double , long double , long double );
 static void RVNColorRGBtoHSL(CGFloat red, CGFloat green, CGFloat blue, CGFloat *hue, CGFloat *saturation, CGFloat *lightness);
 static void RGBToHSV(float r, float g, float b, float *h, float *s, float *v);
-double HRV_compute(double *inputArray, int arraySize);
+results HR_HRV_compute(double *inputArray, int arraySize);
 
 @end
 
@@ -466,7 +472,7 @@ double HRV_compute(double *inputArray, int arraySize);
                         for (int l=yfh_top_left;l<=yfh_bottom_right;l++)
                         {
                         
-                            pixdat = img[k][l];
+                            pixdat = img[l][k];
                         
                             unsigned char redhex = pixdat.red;
                             unsigned char greenhex = pixdat.green;
@@ -525,13 +531,41 @@ double HRV_compute(double *inputArray, int arraySize);
             {
                 for(int c=0;c<noofframes;c++)
                 {
-                    finalhuearray[c] = avghuearray[(c + (windowshift * statevar)) % noofstates]; // correct hue array
+                 //   finalhuearray[c] = avghuearray[c + ((windowshift * statevar) % noofstates)]; // correct hue array
+                     finalhuearray[c] = avghuearray[c+ (windowshift * statevar)];
+            
+                    if (statevar == 0)
+                    {
+                        finalhuearray[c] = avghuearray[c];
+                    }
+                    if (statevar == 1)
+                    {
+                        if (c<120)
+                        {
+                            finalhuearray[c] = avghuearray[c+60];
+                        }
+                        else
+                        {
+                            finalhuearray[c] = avghuearray[c-120];
+                        }
+                    }
+                    if (statevar == 2)
+                    {
+                        if (c<60)
+                        {
+                            finalhuearray[c] = avghuearray[c+120];
+                        }
+                        else
+                        {
+                            finalhuearray[c] = avghuearray[c-60];
+                        }
+                    }
                 }
                 int frames = noofframes;
-                HRV = HRV_compute(avghuearray, frames); // remove //
-                NSLog(@"HRV(%d) = %f", count, HRV);
-                // HRV = 30 + count/3;
-                hrvcache[cachecount] = HRV;
+                resmain = HR_HRV_compute(finalhuearray, frames); // remove //
+                NSLog(@"HR, HRV(%d) = %f, %f", count, resmain.HR, resmain.HRV);
+
+                hrvcache[cachecount] = resmain.HRV;
                 cachecount = (cachecount + 1) % 5;
                 // _HRVlabel.text = (NSString *)HRV;
                 _HRVlabel.text = (NSString *)@"abc";
@@ -549,7 +583,7 @@ double HRV_compute(double *inputArray, int arraySize);
             
             dlib::point hrv_pt; // HRV value
             hrv_pt(1) = 100;
-            hrv_pt(0) = 100+(int)HRV;
+            hrv_pt(0) = 100+(int)resmain.HRV;
             //draw_solid_circle(img, hrv_pt, 10, dlib::rgb_pixel(0, 255, 255));
             //draw_solid_circle(img, hrv_pt, 5, dlib::rgb_pixel(255, 255, 255));
 
@@ -576,12 +610,18 @@ double HRV_compute(double *inputArray, int arraySize);
             dlib::point graph_pt; // graph plotter
             dlib::rectangle graph_rectangle(dlib::point(100,600),dlib::point(300,500));
             draw_rectangle (img, graph_rectangle, dlib::rgb_pixel(0,0,0), 10);
-            
+
+            dlib::point graph_pt2; // graph plotter
+            dlib::rectangle graph_rectangle2(dlib::point(100,600),dlib::point(300,400));
+            draw_rectangle (img, graph_rectangle2, dlib::rgb_pixel(0,0,0), 10);
+
 
             for (int resshow=0;resshow<5;resshow++)
             {
                 graph_pt(1) = 600-(10*hrvdisp[resshow]);
                 graph_pt(0) = 100+resshow*50;
+                if (graph_pt(1)<400)
+                    graph_pt(1) = 400;
                 draw_solid_circle(img, graph_pt, 10, dlib::rgb_pixel(0, 0, 0));
                 draw_solid_circle(img, graph_pt, 8, dlib::rgb_pixel(255, 0, 0));
             }
@@ -771,10 +811,10 @@ static void RGBToHSV(float r, float g, float b, float *h, float *s, float *v)
 }
 
 
-double HRV_compute(double *inputArray, int arraySize)
+results HR_HRV_compute(double *inputArray, int arraySize)
 {
     int i;
-    int limit=8,rrSize=0; //shoulr be divisible by 2
+    int limit=8,rrSize=0; //should be divisible by 2
     int rr[30];
     
     for(i=30+limit; i<arraySize-limit; i++)
@@ -791,7 +831,8 @@ double HRV_compute(double *inputArray, int arraySize)
     
     // **********************
     double rmssd,rMSSD,HR,HRV;
-    
+    results resfunc;
+    int framerateeff = 20;    
     for(i=0; i<(rrSize-1); i++)
     {
         rmssd =(rr[i] - rr[i+1]) * (rr[i] - rr[i+1]);
@@ -799,11 +840,11 @@ double HRV_compute(double *inputArray, int arraySize)
     
     rMSSD = sqrt(rmssd/(rrSize-1));
     
-    HR  = (rrSize * framerate * 60) / (rr[rrSize-1] - rr[0]);
+    resfunc.HR  = ((rrSize-1) * framerate * 60) / (rr[rrSize-1] - rr[0]);
 
-    HRV = rMSSD;
+    resfunc.HRV = rMSSD;
     
-    return HRV;
+    return resfunc;
     
 }
 
