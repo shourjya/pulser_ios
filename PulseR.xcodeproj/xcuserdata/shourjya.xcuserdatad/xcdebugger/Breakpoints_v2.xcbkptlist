@@ -2,4 +2,54 @@
 <Bucket
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DisplayLiveSamples/DlibWrapper.mm"
+            timestampString = "516905912.429544"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "78"
+            endingLineNumber = "78"
+            landmarkName = "@interface DlibWrapper()"
+            landmarkType = "2">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[DlibWrapper prepared]"
+                  moduleName = "PulseR"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Volumes/Storage/Desktop/PulseR_iOS/pulser_ios/DisplayLiveSamples/DlibWrapper.mm"
+                  timestampString = "516812358.476223"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "71"
+                  endingLineNumber = "71"
+                  offsetFromSymbolStart = "12">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[DlibWrapper setPrepared:]"
+                  moduleName = "PulseR"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Volumes/Storage/Desktop/PulseR_iOS/pulser_ios/DisplayLiveSamples/DlibWrapper.mm"
+                  timestampString = "516812358.480913"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "71"
+                  endingLineNumber = "71"
+                  offsetFromSymbolStart = "20">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

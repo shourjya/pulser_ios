@@ -15,13 +15,31 @@ class SessionHandler : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, A
         currentMetadata = []
         super.init()
     }
-    
+
     func openSession() {
         let device = AVCaptureDevice.devices(withMediaType: AVMediaTypeVideo)
             .map { $0 as! AVCaptureDevice }
             .filter { $0.position == .front}
             .first!
         
+        
+        //int fps = 30; // Change this value
+
+        do {
+            try device.lockForConfiguration()
+        } catch {
+            // handle error
+            return
+        }
+        
+        device.activeVideoMinFrameDuration = CMTimeMake(1, 5);
+        //device.activeVideoMaxFrameDuration = CMTimeMake(1, 1);
+        device.unlockForConfiguration()
+
+        NSLog("avghsl,h,s,l");
+        NSLog("results,count,framerate,avghue,saturation,lightness,HR,HRV");
+        NSLog(",rangevalid,allcount,avghue,avgsat,avglight,validhue(5-25),validsat(40-240),validlight(40-240),");
+
         let input = try! AVCaptureDeviceInput(device: device)
         
         let output = AVCaptureVideoDataOutput()
@@ -29,7 +47,7 @@ class SessionHandler : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, A
         
         let metaOutput = AVCaptureMetadataOutput()
         metaOutput.setMetadataObjectsDelegate(self, queue: faceQueue)
-    
+
         session.beginConfiguration()
         
         if session.canAddInput(input) {
@@ -53,8 +71,14 @@ class SessionHandler : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, A
         
         //@property (nonatomic, weak) IBOutlet UILabel *HRVlabel;
         wrapper?.prepare()
+
+        NSLog("test3:%d",10)
+
         //wrapper?.initlabel()
         session.startRunning()
+        
+        NSLog("test2:%d",10)
+
     }
     
     // MARK: AVCaptureVideoDataOutputSampleBufferDelegate

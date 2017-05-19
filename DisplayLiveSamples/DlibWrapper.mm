@@ -26,22 +26,37 @@ struct results{
     double HRV = 0;
 };
 
+struct hslpixel{
+    int h;
+    int s;
+    int l;
+};
+
 // global variables
 
 //inter frame variables
 
-int count = 0;
+int count = 0,allcount=0;
 int noofstates = noofframes / windowshift;
 int statevar = 0;
 int startflag = 0;
 
+Boolean frflag=1,hflag=1,sflag=1,lflag=1;
+
+double t1=0,t2=0,timegap=0,frameactualrate;
+NSDate *start = [NSDate date];
+// do stuff...
+// NSTimeInterval timeInterval = [start timeIntervalSinceNow];
+NSDate *start180 = [NSDate date];
+
 
 double hrvcache[] = {0.1, 0.1, 0.1, 0.1, 0.1};
 double hrvdisp[] = {0.1, 0.1, 0.1, 0.1, 0.1};
+
 int cachecount = 0,shift=0;
 
 unsigned int r=100,g=10,b=100;
-CGFloat h, s, v;
+CGFloat h, s, l;
 
 dlib::array2d<dlib::bgr_pixel> img;
 
@@ -49,7 +64,7 @@ double avggreenarray[noofframes],avgredarray[noofframes],avghuearray[noofframes]
 //double HR = 60, HRV = 42.2; // initialisation only
 results resmain;
 
-int pixelcount = 0,pixelhuesum=0,pixelredsum=0,pixelgreensum=0;
+int pixelcount = 0,pixelhuesum=0,pixelsatsum=0,pixellightsum=0,pixelredsum=0,pixelgreensum=0;
 dlib::bgr_pixel pixdat;
 
 // plot data
@@ -57,6 +72,7 @@ dlib::bgr_pixel pixdat;
 double hrv2d[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 double hr2d[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 int count2d = 0;
+
 // text overlay
 
 @interface DlibWrapper ()
@@ -74,6 +90,7 @@ roots rootsabc(long double , long double , long double );
 static void RVNColorRGBtoHSL(CGFloat red, CGFloat green, CGFloat blue, CGFloat *hue, CGFloat *saturation, CGFloat *lightness);
 static void RGBToHSV(float r, float g, float b, float *h, float *s, float *v);
 results HR_HRV_compute(double *inputArray, int arraySize);
+
 
 @end
 
@@ -123,6 +140,7 @@ results HR_HRV_compute(double *inputArray, int arraySize);
     //[window addSubview:_HRVlabel];
     
     
+    
     // face detection variables
     
     int partno, x_canthus_eyeleft,y_canthus_eyeleft,x_canthus_eyeright,y_canthus_eyeright;
@@ -146,14 +164,13 @@ results HR_HRV_compute(double *inputArray, int arraySize);
     
     double xmean,ymean;
     
-    double avggreen=0,avgred=0,avghue=0;
+    double avggreen=0,avgred=0,avghue=0,avgsat=0,avglight=0;
     
     // CGFloat h, s, v;
 
     // CGFloat fR,fG,fB;
 
     //_HRVlabel.
-    
     
     
     // MARK: magic
@@ -195,8 +212,15 @@ results HR_HRV_compute(double *inputArray, int arraySize);
     int nooffaces = convertedRectangles.size();
     // for every detected face
     //for (unsigned long j = 0; j < convertedRectangles.size(); ++j)
+    
+    NSLog(@"Time");
+
+    
     if (nooffaces)
     {
+        allcount++;
+        NSLog(@"allcount, %d",allcount);
+
         for (unsigned long j = 0; j < 1; ++j) // primary face only
         {
             dlib::rectangle oneFaceRect = convertedRectangles[j];
@@ -462,6 +486,9 @@ results HR_HRV_compute(double *inputArray, int arraySize);
 //                NSLog(@"xfh1,yfh1 = (%d, %d)",xfh1,yfh1);
 
             }
+            
+            int fh_pt_total=0;
+            int fh_valid_h=0,fh_valid_s=0,fh_valid_l=0;
 
             @try
             {
@@ -469,30 +496,60 @@ results HR_HRV_compute(double *inputArray, int arraySize);
                 {
                     for (int k=xfh_top_left;k<=xfh_bottom_right;k++)
                     {
-                        for (int l=yfh_top_left;l<=yfh_bottom_right;l++)
+                        for (int m=yfh_top_left;m<=yfh_bottom_right;m++)
                         {
                         
-                            pixdat = img[l][k];
+                            pixdat = img[m][k];
                         
                             unsigned char redhex = pixdat.red;
                             unsigned char greenhex = pixdat.green;
                             unsigned char bluehex = pixdat.blue;
                         
-                            RVNColorRGBtoHSL(redhex, greenhex, bluehex, &h, &s, &v);
+                            RVNColorRGBtoHSL(redhex, greenhex, bluehex, &h, &s, &l);
                         
                             pixelredsum+=redhex;
                             pixelhuesum+=h;
+                            pixelsatsum+=s;
+                            pixellightsum+=l;
                         
                             //  pixelhuesum+=pixelhue;
                             pixelcount++;
+                            fh_pt_total++;
+                            if(h<25 && h>5)
+                            {
+                                fh_valid_h++;
+                            }
+                            if(s<240 && s>40)
+                            {
+                                fh_valid_s++;
+                            }
+                            if(l<240 && l>40)
+                            {
+                                fh_valid_l++;
+                            }
+                            if((count%60)==1)
+                            {
+                                NSLog(@"pixhsl,%d,%f,%f,%f",allcount,h,s,l);
+                            }
+                            
                         }
+
                     }
+                    
                 }
                 else
                 {
                     NSLog(@"Forehead at index (%d) cannot be found", count);
                 }
+                
+                if((count%60)==1)
+                {
+                    NSLog(@"rawhsl,%d,%f,%f,%f",allcount,h,s,l);
+                }
             }
+            
+
+            
             @catch (NSException *exception) {
 //                NSLog(@"%@", exception.reason);
 //                NSLog(@"Forehead at index (%d) cannot be found", count);
@@ -504,9 +561,15 @@ results HR_HRV_compute(double *inputArray, int arraySize);
             
             avgred = double(pixelredsum)/double(pixelcount);
             avghue = double(pixelhuesum)/double(pixelcount);
-//            NSLog(@"Avg Hue at index (%d) = %f", avghue);
+            avgsat = double(pixelsatsum)/double(pixelcount);
+            avglight = double(pixellightsum)/double(pixelcount);
+
+            // NSLog(@"Avg Hue at index (%d) = %f", avghue);
+            NSLog(@"avghsl(%d), %f,%f,%f", allcount, avghue,avgsat,avglight);
             pixelredsum = 0;
             pixelhuesum = 0;
+            pixelsatsum=0;
+            pixellightsum=0;
             pixelcount = 0;
             
             dlib::rectangle fh(xfh_top_left,yfh_top_left,(xfh_bottom_right),(yfh_bottom_right));
@@ -520,6 +583,12 @@ results HR_HRV_compute(double *inputArray, int arraySize);
                 count = 0;
                 statevar = -1;
                 startflag = 1;
+                NSTimeInterval timeInterval180 = [start180 timeIntervalSinceNow];
+                NSLog(@"tdiff180frame,%d,%f", count, timeInterval180);
+                start180 = [NSDate date];
+                frameactualrate = -180/timeInterval180;
+                NSLog(@"frameactualrate,%d,%f", count, frameactualrate);
+
             }
             
             avghuearray[count]=avghue;
@@ -560,10 +629,13 @@ results HR_HRV_compute(double *inputArray, int arraySize);
                             finalhuearray[c] = avghuearray[c-60];
                         }
                     }
+                    
+                    // NSLog(@"frameactualrate,%d,%f", count, frameactualrate);
+
                 }
                 int frames = noofframes;
                 resmain = HR_HRV_compute(finalhuearray, frames); // remove //
-                NSLog(@"HR, HRV(%d) = %f, %f", count, resmain.HR, resmain.HRV);
+                // NSLog(@"(%d),HR, %f, HRV, %f", count, resmain.HR, resmain.HRV);
 
                 hrvcache[cachecount] = resmain.HRV;
                 cachecount = (cachecount + 1) % 5;
@@ -580,7 +652,78 @@ results HR_HRV_compute(double *inputArray, int arraySize);
             count++;
             
             // result display
+            double validhue = double(fh_valid_h*100)/fh_pt_total;
+            double validsat = double(fh_valid_s*100)/fh_pt_total;
+            double validlight = double(fh_valid_l*100)/fh_pt_total;
             
+            if (validhue>=90)
+                hflag = 0;
+            else
+                hflag = 1;
+                
+            if (validsat>=90)
+                sflag = 0;
+            else
+                sflag = 1;
+            
+            if (validlight>=90)
+                lflag = 0;
+            else
+                lflag = 1;
+            
+            if (frameactualrate>=8)
+                frflag = 0;
+            else
+                frflag = 1;
+            
+            // NSLog(@"validhsl,%d,%f,%f,%f",allcount,validhue,validsat,validlight);
+            if (allcount<1001)
+            {
+                NSLog(@",rangevalid,%d,%f,%f,%f,%f,%f,%f,",allcount,avghue,avgsat,avglight,validhue,validsat,validlight);
+            }
+            if (allcount<3001)
+            {
+                NSLog(@"results,%d,%f,%f,%f,%f,%f,%f",allcount,frameactualrate,avghue,avgsat,avglight,resmain.HR,resmain.HRV);
+            }
+            
+            // warning flags
+            
+            if(frflag == 1)
+            {
+                dlib::point frflag_pt; // Frame Rate flag
+                frflag_pt(1) = 100;
+                frflag_pt(0) = 100;
+                draw_solid_circle(img, frflag_pt, 15, dlib::rgb_pixel(255, 0, 255));
+                draw_solid_circle(img, frflag_pt, 5, dlib::rgb_pixel(0, 255, 255));
+            }
+            
+            if(hflag == 1)
+            {
+                dlib::point hflag_pt; // Hue flag
+                hflag_pt(1) = 150;
+                hflag_pt(0) = 100;
+                draw_solid_circle(img, hflag_pt, 15, dlib::rgb_pixel(255, 0, 255));
+                draw_solid_circle(img, hflag_pt, 5, dlib::rgb_pixel(0, 0, 255));
+            }
+            
+            if(sflag == 1)
+            {
+                dlib::point sflag_pt; // Sat flag
+                sflag_pt(1) = 200;
+                sflag_pt(0) = 100;
+                draw_solid_circle(img, sflag_pt, 15, dlib::rgb_pixel(255, 0, 255));
+                draw_solid_circle(img, sflag_pt, 5, dlib::rgb_pixel( 0, 255, 0));
+            }
+            
+            if(lflag == 1)
+            {
+                dlib::point lflag_pt; // Lightness flag
+                lflag_pt(1) = 250;
+                lflag_pt(0) = 100;
+                draw_solid_circle(img, lflag_pt, 15, dlib::rgb_pixel(255, 0, 255));
+                draw_solid_circle(img, lflag_pt, 5, dlib::rgb_pixel(0, 0, 0));
+            }
+
             dlib::point hrv_pt; // HRV value
             hrv_pt(1) = 100;
             hrv_pt(0) = 100+(int)resmain.HRV;
@@ -631,6 +774,9 @@ results HR_HRV_compute(double *inputArray, int arraySize);
     // put everything back where it belongs
     CVPixelBufferLockBaseAddress(imageBuffer, 0);
 
+    NSTimeInterval timeInterval = [start timeIntervalSinceNow];
+    NSLog(@"tdiff1frame,%d,%f", count, timeInterval);
+    
     // copy dlib image data back into samplebuffer
     img.reset();
     position = 0;
@@ -814,7 +960,7 @@ static void RGBToHSV(float r, float g, float b, float *h, float *s, float *v)
 results HR_HRV_compute(double *inputArray, int arraySize)
 {
     int i;
-    int limit=8,rrSize=0; //should be divisible by 2
+    int limit=2*int(frameactualrate/8), rrSize=0; //should be divisible by 2
     int rr[30];
     
     for(i=30+limit; i<arraySize-limit; i++)
@@ -832,7 +978,6 @@ results HR_HRV_compute(double *inputArray, int arraySize)
     // **********************
     double rmssd,rMSSD,HR,HRV;
     results resfunc;
-    int framerateeff = 20;    
     for(i=0; i<(rrSize-1); i++)
     {
         rmssd =(rr[i] - rr[i+1]) * (rr[i] - rr[i+1]);
@@ -840,7 +985,7 @@ results HR_HRV_compute(double *inputArray, int arraySize)
     
     rMSSD = sqrt(rmssd/(rrSize-1));
     
-    resfunc.HR  = ((rrSize-1) * framerate * 60) / (rr[rrSize-1] - rr[0]);
+    resfunc.HR  = ((rrSize-1) * frameactualrate * 60) / (rr[rrSize-1] - rr[0]);
 
     resfunc.HRV = rMSSD;
     
