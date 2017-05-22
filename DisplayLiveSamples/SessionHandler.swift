@@ -71,14 +71,8 @@ class SessionHandler : NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, A
         
         //@property (nonatomic, weak) IBOutlet UILabel *HRVlabel;
         wrapper?.prepare()
-
-        NSLog("test3:%d",10)
-
         //wrapper?.initlabel()
         session.startRunning()
-        
-        NSLog("test2:%d",10)
-
     }
     
     // MARK: AVCaptureVideoDataOutputSampleBufferDelegate
