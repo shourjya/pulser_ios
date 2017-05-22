@@ -67,6 +67,7 @@ results resmain;
 int pixelcount = 0,pixelhuesum=0,pixelsatsum=0,pixellightsum=0,pixelredsum=0,pixelgreensum=0;
 dlib::bgr_pixel pixdat;
 
+
 // plot data
 
 double hrv2d[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -90,8 +91,6 @@ roots rootsabc(long double , long double , long double );
 static void RVNColorRGBtoHSL(CGFloat red, CGFloat green, CGFloat blue, CGFloat *hue, CGFloat *saturation, CGFloat *lightness);
 static void RGBToHSV(float r, float g, float b, float *h, float *s, float *v);
 results HR_HRV_compute(double *inputArray, int arraySize);
-
-
 @end
 
 @implementation DlibWrapper {
@@ -140,7 +139,6 @@ results HR_HRV_compute(double *inputArray, int arraySize);
     //[window addSubview:_HRVlabel];
     
     
-    
     // face detection variables
     
     int partno, x_canthus_eyeleft,y_canthus_eyeleft,x_canthus_eyeright,y_canthus_eyeright;
@@ -165,12 +163,6 @@ results HR_HRV_compute(double *inputArray, int arraySize);
     double xmean,ymean;
     
     double avggreen=0,avgred=0,avghue=0,avgsat=0,avglight=0;
-    
-    // CGFloat h, s, v;
-
-    // CGFloat fR,fG,fB;
-
-    //_HRVlabel.
     
     
     // MARK: magic
@@ -212,10 +204,6 @@ results HR_HRV_compute(double *inputArray, int arraySize);
     int nooffaces = convertedRectangles.size();
     // for every detected face
     //for (unsigned long j = 0; j < convertedRectangles.size(); ++j)
-    
-    NSLog(@"Time");
-
-    
     if (nooffaces)
     {
         allcount++;
@@ -229,7 +217,6 @@ results HR_HRV_compute(double *inputArray, int arraySize);
             dlib::full_object_detection shape = sp(img, oneFaceRect);
             
             int numpartsum = shape.num_parts();
-            // NSLog(@"No of landmarks = %d (%d)", numpartsum,count);
             
             // and draw them into the image (samplebuffer)
             for (unsigned long k = 0; k < shape.num_parts(); k++) {
@@ -498,7 +485,6 @@ results HR_HRV_compute(double *inputArray, int arraySize);
                     {
                         for (int m=yfh_top_left;m<=yfh_bottom_right;m++)
                         {
-                        
                             pixdat = img[m][k];
                         
                             unsigned char redhex = pixdat.red;
@@ -547,8 +533,6 @@ results HR_HRV_compute(double *inputArray, int arraySize);
                     NSLog(@"rawhsl,%d,%f,%f,%f",allcount,h,s,l);
                 }
             }
-            
-
             
             @catch (NSException *exception) {
 //                NSLog(@"%@", exception.reason);
@@ -629,9 +613,6 @@ results HR_HRV_compute(double *inputArray, int arraySize);
                             finalhuearray[c] = avghuearray[c-60];
                         }
                     }
-                    
-                    // NSLog(@"frameactualrate,%d,%f", count, frameactualrate);
-
                 }
                 int frames = noofframes;
                 resmain = HR_HRV_compute(finalhuearray, frames); // remove //
@@ -650,6 +631,8 @@ results HR_HRV_compute(double *inputArray, int arraySize);
                 shift=(shift+1)%5;
             }
             count++;
+            
+            // result
             
             // result display
             double validhue = double(fh_valid_h*100)/fh_pt_total;
@@ -692,7 +675,7 @@ results HR_HRV_compute(double *inputArray, int arraySize);
             {
                 dlib::point frflag_pt; // Frame Rate flag
                 frflag_pt(1) = 100;
-                frflag_pt(0) = 100;
+                frflag_pt(0) = 1000;
                 draw_solid_circle(img, frflag_pt, 15, dlib::rgb_pixel(255, 0, 255));
                 draw_solid_circle(img, frflag_pt, 5, dlib::rgb_pixel(0, 255, 255));
             }
@@ -701,7 +684,7 @@ results HR_HRV_compute(double *inputArray, int arraySize);
             {
                 dlib::point hflag_pt; // Hue flag
                 hflag_pt(1) = 150;
-                hflag_pt(0) = 100;
+                hflag_pt(0) = 1000;
                 draw_solid_circle(img, hflag_pt, 15, dlib::rgb_pixel(255, 0, 255));
                 draw_solid_circle(img, hflag_pt, 5, dlib::rgb_pixel(0, 0, 255));
             }
@@ -710,7 +693,7 @@ results HR_HRV_compute(double *inputArray, int arraySize);
             {
                 dlib::point sflag_pt; // Sat flag
                 sflag_pt(1) = 200;
-                sflag_pt(0) = 100;
+                sflag_pt(0) = 1000;
                 draw_solid_circle(img, sflag_pt, 15, dlib::rgb_pixel(255, 0, 255));
                 draw_solid_circle(img, sflag_pt, 5, dlib::rgb_pixel( 0, 255, 0));
             }
@@ -719,7 +702,7 @@ results HR_HRV_compute(double *inputArray, int arraySize);
             {
                 dlib::point lflag_pt; // Lightness flag
                 lflag_pt(1) = 250;
-                lflag_pt(0) = 100;
+                lflag_pt(0) = 1000;
                 draw_solid_circle(img, lflag_pt, 15, dlib::rgb_pixel(255, 0, 255));
                 draw_solid_circle(img, lflag_pt, 5, dlib::rgb_pixel(0, 0, 0));
             }
@@ -765,6 +748,7 @@ results HR_HRV_compute(double *inputArray, int arraySize);
                 graph_pt(0) = 100+resshow*50;
                 if (graph_pt(1)<400)
                     graph_pt(1) = 400;
+                
                 draw_solid_circle(img, graph_pt, 10, dlib::rgb_pixel(0, 0, 0));
                 draw_solid_circle(img, graph_pt, 8, dlib::rgb_pixel(255, 0, 0));
             }
