@@ -142,7 +142,7 @@ results HR_HRV_compute(double *inputArray, int arraySize);
     // face detection variables
     
     int partno, x_canthus_eyeleft,y_canthus_eyeleft,x_canthus_eyeright,y_canthus_eyeright;
-    int fh1,fh2,fh3,fh4;
+//    int fh1,fh2,fh3,fh4;
     int x_noselist[4],y_noselist[4],flag_noselist_same;
     long double m_canthus,c_canthus,m_noselist, c_noselist;
     int xfh1,xfh2;
@@ -162,7 +162,7 @@ results HR_HRV_compute(double *inputArray, int arraySize);
     
     double xmean,ymean;
     
-    double avggreen=0,avgred=0,avghue=0,avgsat=0,avglight=0;
+    double avgred=0,avghue=0,avgsat=0,avglight=0;
     
     
     // MARK: magic
@@ -216,7 +216,7 @@ results HR_HRV_compute(double *inputArray, int arraySize);
             // detect all landmarks
             dlib::full_object_detection shape = sp(img, oneFaceRect);
             
-            int numpartsum = shape.num_parts();
+//            int numpartsum = shape.num_parts();
             
             // and draw them into the image (samplebuffer)
             for (unsigned long k = 0; k < shape.num_parts(); k++) {
@@ -365,26 +365,26 @@ results HR_HRV_compute(double *inputArray, int arraySize);
                 xfh2 = int((yfh2_uncorr-c_noselist)/m_noselist) ;
             }
             
-            dlib::point p_fh1_1;
-            p_fh1_1(0) = xfh1_1;
-            p_fh1_1(1) = yfh1_1;
-            // draw_solid_circle(img, p_fh1_1, 3, dlib::rgb_pixel(255, 0, 0));
-            
-            dlib::point p_fh1_2;
-            p_fh1_2(0) = xfh1_2;
-            p_fh1_2(1) = yfh1_2;
-            // draw_solid_circle(img, p_fh1_2, 3, dlib::rgb_pixel(255, 0, 0));
-            
-            
-            dlib::point p_fh1;
-            p_fh1(0) = xfh1;
-            p_fh1(1) = yfh1;
-            //draw_solid_circle(img, p_fh1, 3, dlib::rgb_pixel(255, 0, 0));
-            
-            dlib::point p_fh2;
-            p_fh2(0) = xfh2;
-            p_fh2(1) = yfh2;
-            //draw_solid_circle(img, p_fh2, 3, dlib::rgb_pixel(255, 0, 0));
+//            dlib::point p_fh1_1;
+//            p_fh1_1(0) = xfh1_1;
+//            p_fh1_1(1) = yfh1_1;
+//            // draw_solid_circle(img, p_fh1_1, 3, dlib::rgb_pixel(255, 0, 0));
+//            
+//            dlib::point p_fh1_2;
+//            p_fh1_2(0) = xfh1_2;
+//            p_fh1_2(1) = yfh1_2;
+//            // draw_solid_circle(img, p_fh1_2, 3, dlib::rgb_pixel(255, 0, 0));
+//            
+//            
+//            dlib::point p_fh1;
+//            p_fh1(0) = xfh1;
+//            p_fh1(1) = yfh1;
+//            //draw_solid_circle(img, p_fh1, 3, dlib::rgb_pixel(255, 0, 0));
+//            
+//            dlib::point p_fh2;
+//            p_fh2(0) = xfh2;
+//            p_fh2(1) = yfh2;
+//            //draw_solid_circle(img, p_fh2, 3, dlib::rgb_pixel(255, 0, 0));
             
             
             // for finding line perpendicular to nose-to-forehead line
@@ -443,25 +443,25 @@ results HR_HRV_compute(double *inputArray, int arraySize);
                 xfh_bottom_right = xfh_bottom_roots.root1;
                 yfh_bottom_right = int(m_fh_bottom*xfh2+c_fh_bottom);
             }
-            dlib::point fh_tr;
-            fh_tr(0) = xfh_top_right;
-            fh_tr(1) = yfh_top_right;
-            //draw_solid_circle(img, fh_tr, 3, dlib::rgb_pixel(0, 0, 255));
-            
-            dlib::point fh_br;
-            fh_br(0) = xfh_bottom_right;
-            fh_br(1) = yfh_bottom_right;
-            //draw_solid_circle(img, fh_br, 3, dlib::rgb_pixel(0, 0, 255));
-            
-            dlib::point fh_tl;
-            fh_tl(0) = xfh_top_left;
-            fh_tl(1) = yfh_top_left;
-            //draw_solid_circle(img, fh_tl, 3, dlib::rgb_pixel(0, 0, 255));
-            
-            dlib::point fh_bl;
-            fh_bl(0) = xfh_bottom_left;
-            fh_bl(1) = yfh_bottom_left;
-            //draw_solid_circle(img, fh_bl, 3, dlib::rgb_pixel(0, 0, 255));
+//            dlib::point fh_tr;
+//            fh_tr(0) = xfh_top_right;
+//            fh_tr(1) = yfh_top_right;
+//            //draw_solid_circle(img, fh_tr, 3, dlib::rgb_pixel(0, 0, 255));
+//            
+//            dlib::point fh_br;
+//            fh_br(0) = xfh_bottom_right;
+//            fh_br(1) = yfh_bottom_right;
+//            //draw_solid_circle(img, fh_br, 3, dlib::rgb_pixel(0, 0, 255));
+//            
+//            dlib::point fh_tl;
+//            fh_tl(0) = xfh_top_left;
+//            fh_tl(1) = yfh_top_left;
+//            //draw_solid_circle(img, fh_tl, 3, dlib::rgb_pixel(0, 0, 255));
+//            
+//            dlib::point fh_bl;
+//            fh_bl(0) = xfh_bottom_left;
+//            fh_bl(1) = yfh_bottom_left;
+//            //draw_solid_circle(img, fh_bl, 3, dlib::rgb_pixel(0, 0, 255));
             
             // detect hsv
             
@@ -547,6 +547,31 @@ results HR_HRV_compute(double *inputArray, int arraySize);
             avghue = double(pixelhuesum)/double(pixelcount);
             avgsat = double(pixelsatsum)/double(pixelcount);
             avglight = double(pixellightsum)/double(pixelcount);
+            
+            double validhue = double(fh_valid_h*100)/fh_pt_total;
+            double validsat = double(fh_valid_s*100)/fh_pt_total;
+            double validlight = double(fh_valid_l*100)/fh_pt_total;
+            
+            if (validhue>=90)
+                hflag = 0;
+            else
+                hflag = 1;
+            
+            if (validsat>=90)
+                sflag = 0;
+            else
+                sflag = 1;
+            
+            if (validlight>=90)
+                lflag = 0;
+            else
+                lflag = 1;
+            
+            if (frameactualrate>=8)
+                frflag = 0;
+            else
+                frflag = 1;
+
 
             // NSLog(@"Avg Hue at index (%d) = %f", avghue);
             NSLog(@"avghsl(%d), %f,%f,%f", allcount, avghue,avgsat,avglight);
@@ -635,29 +660,6 @@ results HR_HRV_compute(double *inputArray, int arraySize);
             // result
             
             // result display
-            double validhue = double(fh_valid_h*100)/fh_pt_total;
-            double validsat = double(fh_valid_s*100)/fh_pt_total;
-            double validlight = double(fh_valid_l*100)/fh_pt_total;
-            
-            if (validhue>=90)
-                hflag = 0;
-            else
-                hflag = 1;
-                
-            if (validsat>=90)
-                sflag = 0;
-            else
-                sflag = 1;
-            
-            if (validlight>=90)
-                lflag = 0;
-            else
-                lflag = 1;
-            
-            if (frameactualrate>=8)
-                frflag = 0;
-            else
-                frflag = 1;
             
             // NSLog(@"validhsl,%d,%f,%f,%f",allcount,validhue,validsat,validlight);
             if (allcount<1001)
@@ -675,17 +677,17 @@ results HR_HRV_compute(double *inputArray, int arraySize);
             {
                 dlib::point frflag_pt; // Frame Rate flag
                 frflag_pt(1) = 100;
-                frflag_pt(0) = 1000;
-                draw_solid_circle(img, frflag_pt, 15, dlib::rgb_pixel(255, 0, 255));
-                draw_solid_circle(img, frflag_pt, 5, dlib::rgb_pixel(0, 255, 255));
+                frflag_pt(0) = 1100;
+                draw_solid_circle(img, frflag_pt, 15, dlib::rgb_pixel(255, 255, 255));
+                draw_solid_circle(img, frflag_pt, 5, dlib::rgb_pixel(255,0,0));
             }
             
             if(hflag == 1)
             {
                 dlib::point hflag_pt; // Hue flag
                 hflag_pt(1) = 150;
-                hflag_pt(0) = 1000;
-                draw_solid_circle(img, hflag_pt, 15, dlib::rgb_pixel(255, 0, 255));
+                hflag_pt(0) = 1100;
+                draw_solid_circle(img, hflag_pt, 15, dlib::rgb_pixel(255, 255, 255));
                 draw_solid_circle(img, hflag_pt, 5, dlib::rgb_pixel(0, 0, 255));
             }
             
@@ -693,8 +695,8 @@ results HR_HRV_compute(double *inputArray, int arraySize);
             {
                 dlib::point sflag_pt; // Sat flag
                 sflag_pt(1) = 200;
-                sflag_pt(0) = 1000;
-                draw_solid_circle(img, sflag_pt, 15, dlib::rgb_pixel(255, 0, 255));
+                sflag_pt(0) = 1100;
+                draw_solid_circle(img, sflag_pt, 15, dlib::rgb_pixel(255, 255, 255));
                 draw_solid_circle(img, sflag_pt, 5, dlib::rgb_pixel( 0, 255, 0));
             }
             
@@ -702,8 +704,8 @@ results HR_HRV_compute(double *inputArray, int arraySize);
             {
                 dlib::point lflag_pt; // Lightness flag
                 lflag_pt(1) = 250;
-                lflag_pt(0) = 1000;
-                draw_solid_circle(img, lflag_pt, 15, dlib::rgb_pixel(255, 0, 255));
+                lflag_pt(0) = 1100;
+                draw_solid_circle(img, lflag_pt, 15, dlib::rgb_pixel(255, 255, 255));
                 draw_solid_circle(img, lflag_pt, 5, dlib::rgb_pixel(0, 0, 0));
             }
 
@@ -909,36 +911,36 @@ static void RVNColorRGBtoHSL(CGFloat red, CGFloat green, CGFloat blue, CGFloat *
     }
 }
 
-static void RGBToHSV(float r, float g, float b, float *h, float *s, float *v)
-{
-    float max = r;
-    if (max < g) max = g;
-    if (max < b) max = b;
-    float min = r;
-    if (min > g) min = g;
-    if (min > b) min = b;
-    
-    /*
-     *	Calculate h
-     */
-    
-    *h = 0;
-    if (max == min) h = 0;
-    else if (max == r) {
-        *h = 60 * (g - b)/(max - min);
-        if (*h < 0) *h += 360;
-        if (*h >= 360) *h -= 360;
-    } else if (max == g) {
-        *h = 60 * (b - r) / (max - min) + 120;
-    } else if (max == b) {
-        *h = 60 * (r - g) / (max - min) + 240;
-    }
-    
-    if (max == 0) *s = 0;
-    else *s = 1 - (min / max);
-    
-    *v = max;
-}
+//static void RGBToHSV(float r, float g, float b, float *h, float *s, float *v)
+//{
+//    float max = r;
+//    if (max < g) max = g;
+//    if (max < b) max = b;
+//    float min = r;
+//    if (min > g) min = g;
+//    if (min > b) min = b;
+//    
+//    /*
+//     *	Calculate h
+//     */
+//    
+//    *h = 0;
+//    if (max == min) h = 0;
+//    else if (max == r) {
+//        *h = 60 * (g - b)/(max - min);
+//        if (*h < 0) *h += 360;
+//        if (*h >= 360) *h -= 360;
+//    } else if (max == g) {
+//        *h = 60 * (b - r) / (max - min) + 120;
+//    } else if (max == b) {
+//        *h = 60 * (r - g) / (max - min) + 240;
+//    }
+//    
+//    if (max == 0) *s = 0;
+//    else *s = 1 - (min / max);
+//    
+//    *v = max;
+//}
 
 
 results HR_HRV_compute(double *inputArray, int arraySize)
@@ -960,7 +962,7 @@ results HR_HRV_compute(double *inputArray, int arraySize)
     // int rr[] = {45,65,65,64,65,24,45,64,24,62,62,26,64,46,46,46,46,4,64,65,61,31,53,54,54,24,54,45,64,46,64,46};
     
     // **********************
-    double rmssd,rMSSD,HR,HRV;
+    double rmssd=0,rMSSD=0; //,HR,HRV;
     results resfunc;
     for(i=0; i<(rrSize-1); i++)
     {
