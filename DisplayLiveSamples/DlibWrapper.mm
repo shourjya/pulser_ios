@@ -48,6 +48,7 @@ NSDate *start = [NSDate date];
 // do stuff...
 // NSTimeInterval timeInterval = [start timeIntervalSinceNow];
 NSDate *start180 = [NSDate date];
+NSDate *startframe1 = [NSDate date];
 
 
 double hrvcache[] = {0.1, 0.1, 0.1, 0.1, 0.1};
@@ -72,7 +73,10 @@ dlib::bgr_pixel pixdat;
 
 double hrv2d[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 double hr2d[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+Boolean hrflagarray[] = {1, 1, 1, 1, 1,1, 1, 1, 1, 1,1, 1, 1, 1, 1,1, 1, 1, 1, 1};
+
 int count2d = 0;
+
 
 // text overlay
 
@@ -89,7 +93,7 @@ int smallestint (int*,int);
 long double smallestdouble (long double*,int);
 roots rootsabc(long double , long double , long double );
 static void RVNColorRGBtoHSL(CGFloat red, CGFloat green, CGFloat blue, CGFloat *hue, CGFloat *saturation, CGFloat *lightness);
-static void RGBToHSV(float r, float g, float b, float *h, float *s, float *v);
+// static void RGBToHSV(float r, float g, float b, float *h, float *s, float *v);
 results HR_HRV_compute(double *inputArray, int arraySize);
 @end
 
@@ -204,6 +208,12 @@ results HR_HRV_compute(double *inputArray, int arraySize);
     int nooffaces = convertedRectangles.size();
     // for every detected face
     //for (unsigned long j = 0; j < convertedRectangles.size(); ++j)
+    
+    NSTimeInterval timeIntervalframe = -[startframe1 timeIntervalSinceNow];
+    NSLog(@",frameratenow, %f",(1/timeIntervalframe));
+    startframe1 = [NSDate date];
+    
+
     if (nooffaces)
     {
         allcount++;
@@ -220,7 +230,7 @@ results HR_HRV_compute(double *inputArray, int arraySize);
             
             // and draw them into the image (samplebuffer)
             for (unsigned long k = 0; k < shape.num_parts(); k++) {
-                dlib::point p = shape.part(k);
+                // dlib::point p = shape.part(k); //disable display
                 // draw_solid_circle(img, p, 3, dlib::rgb_pixel(0, 255, 255));
             }
             
@@ -280,15 +290,15 @@ results HR_HRV_compute(double *inputArray, int arraySize);
             x_canthus_eyeright = shape.part(partno)(0);
             y_canthus_eyeright = shape.part(partno)(1);
             
-            dlib::point p_canthus_l;
-            p_canthus_l(0) = x_canthus_eyeleft;
-            p_canthus_l(1) = y_canthus_eyeleft;
-            // draw_solid_circle(img, p_canthus_l, 3, dlib::rgb_pixel(255, 0, 0));
+//            dlib::point p_canthus_l; //disable display
+//            p_canthus_l(0) = x_canthus_eyeleft;//disable display
+//            p_canthus_l(1) = y_canthus_eyeleft;//disable display
+//            draw_solid_circle(img, p_canthus_l, 3, dlib::rgb_pixel(255, 0, 0));
             
-            dlib::point p_canthus_r;
-            p_canthus_r(0) = x_canthus_eyeright;
-            p_canthus_r(1) = y_canthus_eyeright;
-            // draw_solid_circle(img, p_canthus_r, 3, dlib::rgb_pixel(255, 0, 0));
+//            dlib::point p_canthus_r; //disable display
+//            p_canthus_r(0) = x_canthus_eyeright; //disable display
+//            p_canthus_r(1) = y_canthus_eyeright; //disable display
+//            draw_solid_circle(img, p_canthus_r, 3, dlib::rgb_pixel(255, 0, 0)); //disable display
             
             m_canthus = (double(y_canthus_eyeleft-y_canthus_eyeright)/double(x_canthus_eyeleft-x_canthus_eyeright));
             c_canthus = (y_canthus_eyeleft - (m_canthus*x_canthus_eyeleft));
@@ -305,10 +315,10 @@ results HR_HRV_compute(double *inputArray, int arraySize);
                 yinter = int((m_canthus*xinter)+c_canthus);
                 yinter_uncorr = (m_canthus*xinter_uncorr)+c_canthus;
                 
-                dlib::point p_inter;
-                p_inter(0) = xinter;
-                p_inter(1) = yinter;
-                draw_solid_circle(img, p_inter, 3, dlib::rgb_pixel(255, 255, 0));
+                dlib::point p_inter; //disable display
+                p_inter(0) = xinter; //disable display
+                p_inter(1) = yinter; //disable display
+                draw_solid_circle(img, p_inter, 3, dlib::rgb_pixel(255, 255, 0)); //disable display
             }
             
             // calculate distance between canthuses
@@ -365,26 +375,26 @@ results HR_HRV_compute(double *inputArray, int arraySize);
                 xfh2 = int((yfh2_uncorr-c_noselist)/m_noselist) ;
             }
             
-//            dlib::point p_fh1_1;
-//            p_fh1_1(0) = xfh1_1;
-//            p_fh1_1(1) = yfh1_1;
-//            // draw_solid_circle(img, p_fh1_1, 3, dlib::rgb_pixel(255, 0, 0));
+//            dlib::point p_fh1_1; //disable display
+//            p_fh1_1(0) = xfh1_1; //disable display
+//            p_fh1_1(1) = yfh1_1; //disable display
+//            draw_solid_circle(img, p_fh1_1, 3, dlib::rgb_pixel(255, 0, 0)); //disable display
 //            
-//            dlib::point p_fh1_2;
-//            p_fh1_2(0) = xfh1_2;
-//            p_fh1_2(1) = yfh1_2;
-//            // draw_solid_circle(img, p_fh1_2, 3, dlib::rgb_pixel(255, 0, 0));
+//            dlib::point p_fh1_2; //disable display
+//            p_fh1_2(0) = xfh1_2; //disable display
+//            p_fh1_2(1) = yfh1_2; //disable display
+//            draw_solid_circle(img, p_fh1_2, 3, dlib::rgb_pixel(255, 0, 0)); //disable display
 //            
 //            
-//            dlib::point p_fh1;
-//            p_fh1(0) = xfh1;
-//            p_fh1(1) = yfh1;
-//            //draw_solid_circle(img, p_fh1, 3, dlib::rgb_pixel(255, 0, 0));
+//            dlib::point p_fh1; //disable display
+//            p_fh1(0) = xfh1; //disable display
+//            p_fh1(1) = yfh1; //disable display
+//            draw_solid_circle(img, p_fh1, 3, dlib::rgb_pixel(255, 0, 0)); //disable display
 //            
-//            dlib::point p_fh2;
-//            p_fh2(0) = xfh2;
-//            p_fh2(1) = yfh2;
-//            //draw_solid_circle(img, p_fh2, 3, dlib::rgb_pixel(255, 0, 0));
+//            dlib::point p_fh2; //disable display
+//            p_fh2(0) = xfh2; //disable display
+//            p_fh2(1) = yfh2; //disable display
+//            draw_solid_circle(img, p_fh2, 3, dlib::rgb_pixel(255, 0, 0)); //disable display
             
             
             // for finding line perpendicular to nose-to-forehead line
@@ -443,29 +453,29 @@ results HR_HRV_compute(double *inputArray, int arraySize);
                 xfh_bottom_right = xfh_bottom_roots.root1;
                 yfh_bottom_right = int(m_fh_bottom*xfh2+c_fh_bottom);
             }
-//            dlib::point fh_tr;
-//            fh_tr(0) = xfh_top_right;
-//            fh_tr(1) = yfh_top_right;
-//            //draw_solid_circle(img, fh_tr, 3, dlib::rgb_pixel(0, 0, 255));
+//            dlib::point fh_tr; //disable display
+//            fh_tr(0) = xfh_top_right; //disable display
+//            fh_tr(1) = yfh_top_right; //disable display
+//            draw_solid_circle(img, fh_tr, 3, dlib::rgb_pixel(0, 0, 255)); //disable display
 //            
-//            dlib::point fh_br;
-//            fh_br(0) = xfh_bottom_right;
-//            fh_br(1) = yfh_bottom_right;
-//            //draw_solid_circle(img, fh_br, 3, dlib::rgb_pixel(0, 0, 255));
+//            dlib::point fh_br; //disable display
+//            fh_br(0) = xfh_bottom_right; //disable display
+//            fh_br(1) = yfh_bottom_right; //disable display
+//            draw_solid_circle(img, fh_br, 3, dlib::rgb_pixel(0, 0, 255)); //disable display
 //            
-//            dlib::point fh_tl;
-//            fh_tl(0) = xfh_top_left;
-//            fh_tl(1) = yfh_top_left;
-//            //draw_solid_circle(img, fh_tl, 3, dlib::rgb_pixel(0, 0, 255));
+//            dlib::point fh_tl; //disable display
+//            fh_tl(0) = xfh_top_left; //disable display
+//            fh_tl(1) = yfh_top_left; //disable display
+//            draw_solid_circle(img, fh_tl, 3, dlib::rgb_pixel(0, 0, 255)); //disable display
 //            
-//            dlib::point fh_bl;
-//            fh_bl(0) = xfh_bottom_left;
-//            fh_bl(1) = yfh_bottom_left;
-//            //draw_solid_circle(img, fh_bl, 3, dlib::rgb_pixel(0, 0, 255));
+//            dlib::point fh_bl; //disable display
+//            fh_bl(0) = xfh_bottom_left; //disable display
+//            fh_bl(1) = yfh_bottom_left; //disable display
+//            draw_solid_circle(img, fh_bl, 3, dlib::rgb_pixel(0, 0, 255)); //disable display
             
             // detect hsv
             
-            NSLog(@"Forehead %d = (%d,%d) -> (%d,%d) ", count,xfh_top_left,yfh_top_left,xfh_bottom_right,yfh_bottom_right);
+//            NSLog(@"Forehead %d = (%d,%d) -> (%d,%d) ", count,xfh_top_left,yfh_top_left,xfh_bottom_right,yfh_bottom_right);
 //            NSLog(@"Frame = (%d,%d)", img.nc(), img.nr());
             
             if(flag_noselist_same==1)
@@ -501,7 +511,7 @@ results HR_HRV_compute(double *inputArray, int arraySize);
                             //  pixelhuesum+=pixelhue;
                             pixelcount++;
                             fh_pt_total++;
-                            if(h<25 && h>5)
+                            if(h<40 && h>5)
                             {
                                 fh_valid_h++;
                             }
@@ -515,7 +525,7 @@ results HR_HRV_compute(double *inputArray, int arraySize);
                             }
                             if((count%60)==1)
                             {
-                                NSLog(@"pixhsl,%d,%f,%f,%f",allcount,h,s,l);
+                                NSLog(@",pixhsl,%d,%f,%f,%f",allcount,h,s,l);
                             }
                             
                         }
@@ -530,7 +540,7 @@ results HR_HRV_compute(double *inputArray, int arraySize);
                 
                 if((count%60)==1)
                 {
-                    NSLog(@"rawhsl,%d,%f,%f,%f",allcount,h,s,l);
+                    NSLog(@",rawhsl,%d,%f,%f,%f",allcount,h,s,l);
                 }
             }
             
@@ -567,22 +577,23 @@ results HR_HRV_compute(double *inputArray, int arraySize);
             else
                 lflag = 1;
             
-            if (frameactualrate>=8)
+            if (frameactualrate>=7.5)
                 frflag = 0;
             else
                 frflag = 1;
 
 
             // NSLog(@"Avg Hue at index (%d) = %f", avghue);
-            NSLog(@"avghsl(%d), %f,%f,%f", allcount, avghue,avgsat,avglight);
+            NSLog(@",avghsl(%d), %f,%f,%f", allcount, avghue,avgsat,avglight);
             pixelredsum = 0;
             pixelhuesum = 0;
             pixelsatsum=0;
             pixellightsum=0;
             pixelcount = 0;
             
-            dlib::rectangle fh(xfh_top_left,yfh_top_left,(xfh_bottom_right),(yfh_bottom_right));
-            draw_rectangle (img, fh, dlib::rgb_pixel(255,0,0), 5);
+            // `display forehead box
+            dlib::rectangle fh(xfh_top_left,yfh_top_left,(xfh_bottom_right),(yfh_bottom_right)); //disable display
+            draw_rectangle (img, fh, dlib::rgb_pixel(255,0,0), 5); //disable display
 
             
             // add_overlay(dlib::overlay_rect(fh, dlib::rgb_pixel(255,0,0),"test" ));
@@ -593,10 +604,10 @@ results HR_HRV_compute(double *inputArray, int arraySize);
                 statevar = -1;
                 startflag = 1;
                 NSTimeInterval timeInterval180 = [start180 timeIntervalSinceNow];
-                NSLog(@"tdiff180frame,%d,%f", count, timeInterval180);
+//                NSLog(@"tdiff180frame,%d,%f", count, timeInterval180);
                 start180 = [NSDate date];
                 frameactualrate = -180/timeInterval180;
-                NSLog(@"frameactualrate,%d,%f", count, frameactualrate);
+//                NSLog(@"actualframerate,%d,%f", count, frameactualrate);
 
             }
             
@@ -649,7 +660,9 @@ results HR_HRV_compute(double *inputArray, int arraySize);
                 _HRVlabel.text = (NSString *)@"abc";
                 statevar = (statevar + 1) % noofstates; // update state
                 
-                for (int resshow=0;resshow<5;resshow++)
+		// HRV cache record
+                
+		for (int resshow=0;resshow<5;resshow++)
                 {
                     hrvdisp[resshow] = hrvcache[(resshow+shift+1) % 5];
                 }
@@ -668,7 +681,7 @@ results HR_HRV_compute(double *inputArray, int arraySize);
             }
             if (allcount<3001)
             {
-                NSLog(@"results,%d,%f,%f,%f,%f,%f,%f",allcount,frameactualrate,avghue,avgsat,avglight,resmain.HR,resmain.HRV);
+                NSLog(@",results,%d,%f,%f,%f,%f,%f,%f",allcount,frameactualrate,avghue,avgsat,avglight,resmain.HR,resmain.HRV);
             }
             
             // warning flags
@@ -708,6 +721,8 @@ results HR_HRV_compute(double *inputArray, int arraySize);
                 draw_solid_circle(img, lflag_pt, 15, dlib::rgb_pixel(255, 255, 255));
                 draw_solid_circle(img, lflag_pt, 5, dlib::rgb_pixel(0, 0, 0));
             }
+            
+            // PulseR display
 
             dlib::point hrv_pt; // HRV value
             hrv_pt(1) = 100;
@@ -754,6 +769,9 @@ results HR_HRV_compute(double *inputArray, int arraySize);
                 draw_solid_circle(img, graph_pt, 10, dlib::rgb_pixel(0, 0, 0));
                 draw_solid_circle(img, graph_pt, 8, dlib::rgb_pixel(255, 0, 0));
             }
+            
+            
+
         }
     }
     
@@ -761,7 +779,7 @@ results HR_HRV_compute(double *inputArray, int arraySize);
     CVPixelBufferLockBaseAddress(imageBuffer, 0);
 
     NSTimeInterval timeInterval = [start timeIntervalSinceNow];
-    NSLog(@"tdiff1frame,%d,%f", count, timeInterval);
+    //NSLog(@"tdiff1frame,%d,%f", count, timeInterval);
     
     // copy dlib image data back into samplebuffer
     img.reset();
@@ -946,7 +964,8 @@ static void RVNColorRGBtoHSL(CGFloat red, CGFloat green, CGFloat blue, CGFloat *
 results HR_HRV_compute(double *inputArray, int arraySize)
 {
     int i;
-    int limit=2*int(frameactualrate/8), rrSize=0; //should be divisible by 2
+    int limit=2*int((frameactualrate/8)+0.5f), rrSize=0; //should be divisible by 2
+//    NSLog(@",limit,%d", limit);
     int rr[30];
     
     for(i=30+limit; i<arraySize-limit; i++)
